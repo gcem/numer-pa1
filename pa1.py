@@ -7,6 +7,6 @@ def discreteSecondDiff(n):
 
 
 def vectorizedLaplace(n, m):
-    return sp.kron(sp.eye(m), discreteSecondDiff(n)) * sp.kron(
+    return sp.kron(sp.eye(m), discreteSecondDiff(n)) + sp.kron(
         sp.eye(n), discreteSecondDiff(m)
     )
