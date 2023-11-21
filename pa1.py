@@ -43,7 +43,8 @@ def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
 
 def clone(source: np.ndarray, target: np.ndarray, y: int, x: int):
     (A, b) = getSystem(source, target, y, x)
-    solution, info = sp.linalg.cg(A, b, maxiter=5000)  # TODO change maxiter
+    # solution, info = sp.linalg.cg(A, b, maxiter=50000)
+    solution, istop, iter, *_ = sp.linalg.lsqr(A, b)
     # TODO is info 0?
     result = target.copy()
     (n, m) = source.shape
