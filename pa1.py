@@ -15,7 +15,7 @@ def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
     # looking for A and b in
     # Ax=b
 
-    (n, m) = source.shape  # TODO Check order
+    (n, m) = source.shape
     laplace = vectorizedLaplace(n, m)
 
     A = laplace
@@ -25,7 +25,7 @@ def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
 
     # left and right (first and last columns) are easy:
     A[:n, :] = sp.eye(n, n * m)
-    A[(-n):, :] = sp.eye(n, n * m)
+    A[(-n):, :] = sp.eye(n, n * m, k=n * m - n)
     b[:n] = target[y:y + n, x]
     b[(-n):] = target[y:y + n, x + m - 1]
 
@@ -33,10 +33,8 @@ def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
     for j in range(1, m - 1):
         iTop = n * j
         iBot = n * (j + 1) - 1
-        A[iTop, :] = 0
-        A[iBot, :] = 0
-        A[iTop, iTop] = 1
-        A[iBot, iBot] = 1
+        A[iTop, :] = sp.eye(1, n * m, k=iTop)
+        A[iBot, :] = sp.eye(1, n * m, k=iBot)
         b[iTop] = target[y, x + j]
         b[iBot] = target[y + n - 1, x + j]
 
@@ -45,9 +43,9 @@ def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
 
 def clone(source: np.ndarray, target: np.ndarray, y: int, x: int):
     (A, b) = getSystem(source, target, y, x)
-    solution, info = sp.linalg.cg(A, b)
+    solution, info = sp.linalg.cg(A, b, maxiter=10)  # TODO change maxiter
     # TODO is info 0?
-    result = source.copy()
-    (n, m) = result.shape  # TODO Check order
-    result[y:y + n, x:x + m] = solution
+    result = target.copy()
+    (n, m) = source.shape
+    result[y:y + n, x:x + m] = np.reshape(solution, source.shape, 'F')
     return result

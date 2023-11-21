@@ -15,7 +15,9 @@ def run():
     for rgb in range(3):
         result[..., rgb] = pa1.clone(plane[..., rgb], bird[..., rgb], y, x)
 
-    ski.io.imshow(result)
+    ski.io.imsave("images/result.jpg", result)
+    ski.io.imshow(result, plugin="matplotlib")
+    ski.io.imshow(result, plugin="simpleitk")
 
 
 run()
