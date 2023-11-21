@@ -17,7 +17,6 @@ def run():
 
     ski.io.imsave("images/result.jpg", result)
     ski.io.imshow(result, plugin="matplotlib")
-    ski.io.imshow(result, plugin="simpleitk")
 
 
 run()

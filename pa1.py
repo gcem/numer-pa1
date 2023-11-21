@@ -8,7 +8,7 @@ def discreteSecondDiff(n: int):
 
 def vectorizedLaplace(n: int, m: int):
     return (sp.kron(sp.eye(m), discreteSecondDiff(n)) +
-            sp.kron(sp.eye(n), discreteSecondDiff(m)))
+            sp.kron(discreteSecondDiff(m), sp.eye(n)))
 
 
 def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
@@ -43,7 +43,7 @@ def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
 
 def clone(source: np.ndarray, target: np.ndarray, y: int, x: int):
     (A, b) = getSystem(source, target, y, x)
-    solution, info = sp.linalg.cg(A, b, maxiter=10)  # TODO change maxiter
+    solution, info = sp.linalg.cg(A, b, maxiter=5000)  # TODO change maxiter
     # TODO is info 0?
     result = target.copy()
     (n, m) = source.shape
