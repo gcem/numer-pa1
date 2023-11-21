@@ -24,10 +24,10 @@ def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
     # pixels corresponding to the boundary should be assigned values directly.
 
     # left and right (first and last columns) are easy:
-    A[:n - 1, :] = sp.eye(n, n * m)
+    A[:n, :] = sp.eye(n, n * m)
     A[(-n):, :] = sp.eye(n, n * m)
-    b[:n - 1] = source[y:y + n - 1, x]
-    b[(-n):] = source[y:y + n - 1, x + m - 1]
+    b[:n] = target[y:y + n, x]
+    b[(-n):] = target[y:y + n, x + m - 1]
 
     # top and bottom are cumbersome
     for j in range(1, m - 1):
@@ -38,7 +38,7 @@ def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
         A[iTop, iTop] = 1
         A[iBot, iBot] = 1
         b[iTop] = target[y, x + j]
-        b[iBot] = target[y + m - 1, x + j]
+        b[iBot] = target[y + n - 1, x + j]
 
     return (A, b)
 
@@ -49,5 +49,5 @@ def clone(source: np.ndarray, target: np.ndarray, y: int, x: int):
     # TODO is info 0?
     result = source.copy()
     (n, m) = result.shape  # TODO Check order
-    result[y:y + n - 1, x:x + m - 1] = solution
+    result[y:y + n, x:x + m] = solution
     return result
