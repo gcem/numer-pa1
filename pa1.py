@@ -19,13 +19,13 @@ def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
     laplace = vectorizedLaplace(n, m)
 
     A = laplace
-    b = laplace @ target[y:y + n - 1, x:x + m - 1].flatten('F')
+    b = laplace @ source.flatten('F').transpose()
 
     # pixels corresponding to the boundary should be assigned values directly.
 
     # left and right (first and last columns) are easy:
-    A[:n - 1, :] = sp.eye(n, m)
-    A[(-n):, :] = sp.eye(n, m)
+    A[:n - 1, :] = sp.eye(n, n * m)
+    A[(-n):, :] = sp.eye(n, n * m)
     b[:n - 1] = source[y:y + n - 1, x]
     b[(-n):] = source[y:y + n - 1, x + m - 1]
 
@@ -37,8 +37,8 @@ def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
         A[iBot, :] = 0
         A[iTop, iTop] = 1
         A[iBot, iBot] = 1
-        b[iTop] = source[y, x + j]
-        b[iBot] = source[y + m - 1, x + j]
+        b[iTop] = target[y, x + j]
+        b[iBot] = target[y + m - 1, x + j]
 
     return (A, b)
 
