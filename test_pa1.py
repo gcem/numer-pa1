@@ -54,3 +54,24 @@ def test_getSystem_boundary():
     boundaryIndices = [x for x in range(9) if x != 4]
     assert np.array_equal(ident[boundaryIndices, :], A[boundaryIndices, :])
     assert np.array_equal([1, 4, 7, 2, 8, 3, 6, 9], b[boundaryIndices])
+
+
+def test_getSystem_gradient():
+    target = np.zeros((3, 3))
+    source = np.array([
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]]) # yapf:disable
+    (A, b) = pa1.getSystem(source, target, 0, 0)
+    assert b[4] == -4 * 5 + 2 + 4 + 6 + 8
+
+
+def test_clone():
+    target = np.zeros((3, 3))
+    source = np.array([
+        [1, 2, 3],
+        [4, 5, 6],
+        [10, 15, 20]]) # yapf:disable
+    result = pa1.clone(source, target, 0, 0)
+    assert -4 * result[1, 1] == -4 * 5 + 2 + 4 + 6 + 15
+    assert np.count_nonzero(result) == 1
