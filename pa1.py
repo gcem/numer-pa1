@@ -7,8 +7,9 @@ def discreteSecondDiff(n: int):
 
 
 def vectorizedLaplace(n: int, m: int):
-    return (sp.kron(sp.eye(m), discreteSecondDiff(n)) +
-            sp.kron(discreteSecondDiff(m), sp.eye(n)))
+    return sp.csr_matrix(
+        sp.kron(sp.eye(m), discreteSecondDiff(n)) +
+        sp.kron(discreteSecondDiff(m), sp.eye(n)))
 
 
 def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
@@ -37,6 +38,13 @@ def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
         A[iBot, :] = sp.eye(1, n * m, k=iBot)
         b[iTop] = target[y, x + j]
         b[iBot] = target[y + n - 1, x + j]
+
+    # A = sp.vstack([
+    #     A,
+    #     sp.eye(n, n * m),
+    #     sp.eye(n, n * m, k=n * m - n),
+    #     sp.csr_matrix((m - 2, n * m))])
+    # b =
 
     return (A, b)
 
