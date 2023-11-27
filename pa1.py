@@ -7,7 +7,7 @@ def discreteSecondDiff(n: int):
 
 
 def forwardDiff(n: int):
-    return sp.diags([1, -1], offsets=[0, 1], shape=(n, n))
+    return sp.diags([-1, 1], offsets=[0, 1], shape=(n, n))
 
 
 def backwardDiff(n: int):
