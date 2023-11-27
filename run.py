@@ -6,14 +6,14 @@ import threading
 
 
 def run():
-    bird = ski.io.imread("images/bird.jpg").astype(float)
-    plane = ski.io.imread("images/plane.jpg").astype(float)
+    bird = ski.io.imread("images/bird.jpg")
+    plane = ski.io.imread("images/plane.jpg")
 
     y = 24
     x = 350
 
-    # bird = ski.io.imread("images/bird_ds.jpg").astype(float)
-    # plane = ski.io.imread("images/plane_ds.jpg").astype(float)
+    # bird = ski.io.imread("images/bird_ds.jpg")
+    # plane = ski.io.imread("images/plane_ds.jpg")
 
     # y = 2
     # x = 20
@@ -33,14 +33,13 @@ def run():
     for th in threads:
         th.join()
 
-    clippedResult = np.clip(result.round(), 0, 255).astype('uint8')
-    ski.io.imsave("images/result.jpg", clippedResult)
+    ski.io.imsave("images/result.jpg", result)
 
-    ski.io.imsave("images/result_red.jpg", clippedResult[..., 0])
-    ski.io.imsave("images/result_green.jpg", clippedResult[..., 1])
-    ski.io.imsave("images/result_blue.jpg", clippedResult[..., 2])
+    ski.io.imsave("images/result_red.jpg", result[..., 0])
+    ski.io.imsave("images/result_green.jpg", result[..., 1])
+    ski.io.imsave("images/result_blue.jpg", result[..., 2])
 
-    ski.io.imshow(clippedResult, plugin="matplotlib")
+    ski.io.imshow(result, plugin="matplotlib")
     plt.show()
 
 

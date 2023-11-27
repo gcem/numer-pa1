@@ -15,7 +15,6 @@ def vectorizedLaplace(n: int, m: int):
 def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
     # looking for A and b in
     # Ax=b
-
     (n, m) = source.shape
     laplace = vectorizedLaplace(n, m)
 
@@ -45,12 +44,17 @@ def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
 
 
 def clone(source: np.ndarray, target: np.ndarray, y: int, x: int):
-    (A, b) = getSystem(source, target, y, x)
+    sourceF = source.astype(float)
+    targetF = target.astype(float)
+
+    (A, b) = getSystem(sourceF, targetF, y, x)
     solution = sp.linalg.spsolve(A, b)
     # solution, info = sp.linalg.cg(A, b, maxiter=5000)
     # solution, istop, iter, *_ = sp.linalg.lsqr(A, b)
     # TODO is info 0?
     result = target.copy()
     (n, m) = source.shape
-    result[y:y + n, x:x + m] = np.reshape(solution, source.shape, 'F')
+    result[y:y + n,
+           x:x + m] = np.reshape(solution, source.shape,
+                                 'F').round().clip(0, 255).astype('uint8')
     return result
