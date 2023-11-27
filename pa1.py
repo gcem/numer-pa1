@@ -12,22 +12,18 @@ def vectorizedLaplace(n: int, m: int):
                          dtype=float)
 
 
-def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
-    # looking for A and b in
-    # Ax=b
-    (n, m) = source.shape
-    laplace = vectorizedLaplace(n, m)
-
-    A = laplace
-    b = laplace @ source.flatten('F').transpose()
-
-    # pixels corresponding to the boundary should be assigned values directly.
-
+def setConditionsAtBoundary(originalA: sp.spmatrix,
+                            originalb: sp.spmatrix | np.ndarray,
+                            target: np.ndarray, x: int, y: int,
+                            sourceShape: tuple):
+    (n, m) = sourceShape
     # left and right (first and last columns) are easy:
-    A = sp.vstack([sp.eye(n, n * m), A[n:-n],
-                   sp.eye(n, n * m, k=n * m - n)],
-                  format='csr',
-                  dtype=float)
+    A = sp.vstack(
+        [sp.eye(n, n * m), originalA[n:-n],
+         sp.eye(n, n * m, k=n * m - n)],
+        format='csr',
+        dtype=float)
+    b = originalb.copy()
     b[:n] = target[y:y + n, x]
     b[(-n):] = target[y:y + n, x + m - 1]
 
@@ -41,6 +37,18 @@ def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
         b[iBot] = target[y + n - 1, x + j]
 
     return (A, b)
+
+
+def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
+    # looking for A and b in
+    # Ax=b
+    (n, m) = source.shape
+    laplace = vectorizedLaplace(n, m)
+
+    A = laplace
+    b = laplace @ source.flatten('F').transpose()
+
+    return setConditionsAtBoundary(A, b, target, x, y, source.shape)
 
 
 def clone(source: np.ndarray, target: np.ndarray, y: int, x: int):
