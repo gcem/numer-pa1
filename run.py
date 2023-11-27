@@ -33,7 +33,7 @@ def run():
     for th in threads:
         th.join()
 
-    clippedResult = np.clip(result.round().astype('uint8'), 0, 255)
+    clippedResult = np.clip(result.round(), 0, 255).astype('uint8')
     ski.io.imsave("images/result.jpg", clippedResult)
 
     ski.io.imsave("images/result_red.jpg", clippedResult[..., 0])
