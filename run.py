@@ -23,7 +23,11 @@ def run():
     # for rgb in range(3):
     #     result[..., rgb] = pa1.clone(plane[..., rgb], bird[..., rgb], y, x)
     def doChannel(rgb: int):
-        result[..., rgb] = pa1.clone(plane[..., rgb], bird[..., rgb], y, x)
+        result[..., rgb] = pa1.clone(plane[..., rgb],
+                                     bird[..., rgb],
+                                     y,
+                                     x,
+                                     method="common")
 
     threads = list()
     for rgb in range(3):
@@ -33,7 +37,8 @@ def run():
     for th in threads:
         th.join()
 
-    ski.io.imsave("images/result.jpg", result)
+    # ski.io.imsave("images/result.jpg", result)
+    ski.io.imsave("images/result_common.jpg", result)
 
     ski.io.imsave("images/result_red.jpg", result[..., 0])
     ski.io.imsave("images/result_green.jpg", result[..., 1])
