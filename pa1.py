@@ -7,9 +7,9 @@ def discreteSecondDiff(n: int):
 
 
 def vectorizedLaplace(n: int, m: int):
-    return sp.csr_matrix(
-        sp.kron(sp.eye(m), discreteSecondDiff(n)) +
-        sp.kron(discreteSecondDiff(m), sp.eye(n)))
+    return sp.csr_matrix(sp.kron(sp.eye(m), discreteSecondDiff(n)) +
+                         sp.kron(discreteSecondDiff(m), sp.eye(n)),
+                         dtype=float)
 
 
 def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
@@ -25,8 +25,10 @@ def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
     # pixels corresponding to the boundary should be assigned values directly.
 
     # left and right (first and last columns) are easy:
-    A[:n, :] = sp.eye(n, n * m)
-    A[(-n):, :] = sp.eye(n, n * m, k=n * m - n)
+    A = sp.vstack([sp.eye(n, n * m), A[n:-n],
+                   sp.eye(n, n * m, k=n * m - n)],
+                  format='csr',
+                  dtype=float)
     b[:n] = target[y:y + n, x]
     b[(-n):] = target[y:y + n, x + m - 1]
 
@@ -34,24 +36,18 @@ def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
     for j in range(1, m - 1):
         iTop = n * j
         iBot = n * (j + 1) - 1
-        A[iTop, :] = sp.eye(1, n * m, k=iTop)
-        A[iBot, :] = sp.eye(1, n * m, k=iBot)
+        A[iTop, :] = sp.eye(1, n * m, k=iTop, format='csr', dtype=float)
+        A[iBot, :] = sp.eye(1, n * m, k=iBot, format='csr', dtype=float)
         b[iTop] = target[y, x + j]
         b[iBot] = target[y + n - 1, x + j]
-
-    # A = sp.vstack([
-    #     A,
-    #     sp.eye(n, n * m),
-    #     sp.eye(n, n * m, k=n * m - n),
-    #     sp.csr_matrix((m - 2, n * m))])
-    # b =
 
     return (A, b)
 
 
 def clone(source: np.ndarray, target: np.ndarray, y: int, x: int):
     (A, b) = getSystem(source, target, y, x)
-    solution, info = sp.linalg.cg(A, b, maxiter=5000)
+    solution = sp.linalg.spsolve(A, b)
+    # solution, info = sp.linalg.cg(A, b, maxiter=5000)
     # solution, istop, iter, *_ = sp.linalg.lsqr(A, b)
     # TODO is info 0?
     result = target.copy()
