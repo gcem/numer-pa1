@@ -70,8 +70,8 @@ def test_clone():
     target = np.zeros((3, 3))
     source = np.array([
         [1, 2, 3],
-        [4, 5, 6],
+        [4, 60, 6],
         [10, 15, 20]]) # yapf:disable
     result = pa1.clone(source, target, 0, 0)
-    assert -4 * result[1, 1] == -4 * 5 + 2 + 4 + 6 + 15
+    assert result[1, 1] == round((-4 * 60 + 2 + 4 + 6 + 15) / -4.)
     assert np.count_nonzero(result) == 1
