@@ -30,49 +30,43 @@ def squaredNorms(field: np.ndarray):
     return np.multiply(field, field).sum(axis=2)
 
 
+def vectorWithLargerNorm(field1: np.ndarray, field2: np.ndarray):
+    takeField2 = squaredNorms(field2) > squaredNorms(field1)
+    result = field1.copy()
+    result[takeField2, ...] = field2[takeField2, ...]
+    return result
+
+
 def divergence(field: np.ndarray):
     (n, m, _) = field.shape
     return (backwardDiff(n) @ field[..., 0] +
             field[..., 1] @ backwardDiff(m).transpose())
 
 
-def setConditionsAtBoundary(originalA: sp.spmatrix,
-                            originalb: sp.spmatrix | np.ndarray,
+def setConditionsAtBoundary(A: sp.spmatrix, b: sp.spmatrix | np.ndarray,
                             target: np.ndarray, x: int, y: int,
                             sourceShape: tuple):
     (n, m) = sourceShape
-    # left and right (first and last columns) are easy:
-    A = sp.vstack(
-        [sp.eye(n, n * m), originalA[n:-n],
-         sp.eye(n, n * m, k=n * m - n)],
-        format='csr',
-        dtype=float)
-    b = originalb.copy()
-    b[:n] = target[y:y + n, x]
-    b[(-n):] = target[y:y + n, x + m - 1]
+    boundaryIndices = np.zeros(2 * (n + m) - 4, dtype=int)
+    boundaryIndices[:n] = range(n)
+    boundaryIndices[-n:] = range(n * (m - 1), n * m)
+    topIndices = np.arange(n, n * (m - 1), step=n)
+    boundaryIndices[n:-n:2] = topIndices
+    boundaryIndices[n + 1:-n:2] = topIndices + (n - 1)
 
-    # top and bottom are cumbersome
-    for j in range(1, m - 1):
-        iTop = n * j
-        iBot = n * (j + 1) - 1
-        A[iTop, :] = sp.eye(1, n * m, k=iTop, format='csr', dtype=float)
-        A[iBot, :] = sp.eye(1, n * m, k=iBot, format='csr', dtype=float)
-        b[iTop] = target[y, x + j]
-        b[iBot] = target[y + n - 1, x + j]
-
-    return (A, b)
+    A[boundaryIndices, :] = sp.eye(n * m, format='csr')[boundaryIndices, :]
+    b[boundaryIndices] = target[y:y + n, x:x + m].flatten('F')[boundaryIndices]
 
 
 def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
-    # looking for A and b in
-    # Ax=b
     (n, m) = source.shape
     laplace = vectorizedLaplace(n, m)
 
     A = laplace
     b = laplace @ source.flatten('F').transpose()
 
-    return setConditionsAtBoundary(A, b, target, x, y, source.shape)
+    setConditionsAtBoundary(A, b, target, x, y, source.shape)
+    return (A, b)
 
 
 def getSystemForCommonFeatures(source: np.ndarray, target: np.ndarray, y: int,
@@ -82,15 +76,12 @@ def getSystemForCommonFeatures(source: np.ndarray, target: np.ndarray, y: int,
 
     sourceGradient = gradient(source)
     targetGradient = gradient(target[y:y + n, x:x + m])
-
-    targetFeatures = squaredNorms(targetGradient) > squaredNorms(
-        sourceGradient)
-    maxGradient = sourceGradient.copy()
-    maxGradient[targetFeatures, ...] = targetGradient[targetFeatures]
+    maxGradient = vectorWithLargerNorm(sourceGradient, targetGradient)
 
     b = divergence(maxGradient).flatten('F').transpose()
 
-    return setConditionsAtBoundary(A, b, target, x, y, source.shape)
+    setConditionsAtBoundary(A, b, target, x, y, source.shape)
+    return (A, b)
 
 
 def clone(source: np.ndarray,
@@ -98,17 +89,14 @@ def clone(source: np.ndarray,
           y: int,
           x: int,
           method: str | None = None):
+    (n, m) = source.shape
     sourceF = source.astype(float)
     targetF = target.astype(float)
 
     getSystemFunction = getSystemForCommonFeatures if method == "common" else getSystem
     (A, b) = getSystemFunction(sourceF, targetF, y, x)
     solution = sp.linalg.spsolve(A, b)
-    # solution, info = sp.linalg.cg(A, b, maxiter=5000)
-    # solution, istop, iter, *_ = sp.linalg.lsqr(A, b)
-    # TODO is info 0?
     result = target.copy()
-    (n, m) = source.shape
     result[y:y + n,
            x:x + m] = np.reshape(solution, source.shape,
                                  'F').round().clip(0, 255).astype('uint8')
