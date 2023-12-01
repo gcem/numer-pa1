@@ -17,7 +17,7 @@ def run(backgroundFilename: str, imageToAddFilename: str, y: int, x: int,
         maxThreads (int | None): None heißt die maximale Anzahl, zurzeit 6.
 
     Returns:
-        Tuple: (Hintergrund, 1. Aufgabe, 2. Aufgabe)
+        tuple: (Hintergrund, 1. Aufgabe, 2. Aufgabe)
     """
     background = ski.io.imread(backgroundFilename)
     imageToAdd = ski.io.imread(imageToAddFilename)

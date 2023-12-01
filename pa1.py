@@ -129,7 +129,7 @@ def setConditionsAtBoundary(originalA: sp.spmatrix,
         sourceShape (tuple): 2-Tupel mit (Höhe, Breite)
 
     Returns:
-        _type_: _description_
+        tuple: (A, b)
     """
     (n, m) = sourceShape
 
@@ -164,7 +164,7 @@ def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
         Zielbereich
 
     Returns:
-        Tuple: (A, b)
+        tuple: (A, b)
     """
     (n, m) = source.shape
     laplace = vectorizedLaplace(n, m)
@@ -191,7 +191,7 @@ def getSystemKeepBoth(source: np.ndarray, target: np.ndarray, y: int, x: int):
         Zielbereich
 
     Returns:
-        Tuple: (A, b)
+        tuple: (A, b)
     """
     (n, m) = source.shape
     A = vectorizedLaplace(n, m)
