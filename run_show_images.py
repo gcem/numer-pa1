@@ -41,7 +41,7 @@ def showColumn(image: np.ndarray, title: str, index: int, fig):
     showImage(image, title, (1 + 3 * index, 21 + 3 * index), fig)
     for rgb in range(3):
         showImage(image[..., rgb], ["red", "green", "blue"][rgb],
-                  29 + rgb * 9 + 3 * index, fig, "grey")
+                  29 + rgb * 9 + 3 * index, fig, "gray")
 
 
 def showAll(original: np.ndarray, result1: np.ndarray, result2: np.ndarray):
