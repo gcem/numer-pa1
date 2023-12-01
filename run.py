@@ -31,7 +31,8 @@ def run():
                                      bird[..., rgb],
                                      y,
                                      x,
-                                     method="common")
+                                     method="none")
+        #  method="common")
 
     threads = list()
     for rgb in range(3):

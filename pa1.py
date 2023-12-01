@@ -15,7 +15,7 @@ def backwardDiff(n: int):
 
 
 def vectorizedLaplace(n: int, m: int):
-    return sp.lil_matrix(sp.kron(sp.eye(m), discreteSecondDiff(n)) +
+    return sp.csr_matrix(sp.kron(sp.eye(m), discreteSecondDiff(n)) +
                          sp.kron(discreteSecondDiff(m), sp.eye(n)),
                          dtype=float)
 
@@ -31,9 +31,9 @@ def squaredNorms(field: np.ndarray):
 
 
 def vectorWithLargerNorm(field1: np.ndarray, field2: np.ndarray):
-    takeField2 = squaredNorms(field2) > squaredNorms(field1)
+    isField2Larger = squaredNorms(field2) > squaredNorms(field1)
     result = field1.copy()
-    result[takeField2, ...] = field2[takeField2, ...]
+    result[isField2Larger, ...] = field2[isField2Larger, ...]
     return result
 
 
@@ -55,13 +55,13 @@ def setConditionsAtBoundary(originalA: sp.spmatrix,
 
     A = sp.vstack([
         originalA[innerIndices, :],
-        sp.eye(n * m, dtype=float, format='lil')[boundaryIndices, :]
+        sp.eye(n * m, dtype=float, format='csr')[boundaryIndices, :]
     ])
     b = np.hstack([
         originalb[innerIndices],
         target[y:y + n, x:x + m].flatten('F')[boundaryIndices]
     ]) # yapf: disable
-    return (sp.csr_matrix(A), b)
+    return (A, b)
 
 
 def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
@@ -69,7 +69,7 @@ def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
     laplace = vectorizedLaplace(n, m)
 
     A = laplace
-    b = laplace @ source.flatten('F').transpose()
+    b = laplace @ source.flatten('F')
 
     return setConditionsAtBoundary(A, b, target, x, y, source.shape)
 
@@ -83,7 +83,7 @@ def getSystemForCommonFeatures(source: np.ndarray, target: np.ndarray, y: int,
     targetGradient = gradient(target[y:y + n, x:x + m])
     maxGradient = vectorWithLargerNorm(sourceGradient, targetGradient)
 
-    b = divergence(maxGradient).flatten('F').transpose()
+    b = divergence(maxGradient).flatten('F')
 
     return setConditionsAtBoundary(A, b, target, x, y, source.shape)
 

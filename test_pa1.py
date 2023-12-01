@@ -52,6 +52,21 @@ def test_getSystem_boundary():
     A = A.todense()
     ident = np.eye(9)
     boundaryIndices = [x for x in range(9) if x != 4]
+    assert np.array_equal(ident[boundaryIndices, :], A[1:, :])
+    assert np.array_equal([1, 4, 7, 2, 8, 3, 6, 9], b[1:])
+
+
+# before using sp.vstack, we replaced the rows of A in-place. this tests that.
+def old_test_getSystem_boundary():
+    target = np.array([
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]]) # yapf:disable
+    source = np.zeros((3, 3))
+    (A, b) = pa1.getSystem(source, target, 0, 0)
+    A = A.todense()
+    ident = np.eye(9)
+    boundaryIndices = [x for x in range(9) if x != 4]
     assert np.array_equal(ident[boundaryIndices, :], A[boundaryIndices, :])
     assert np.array_equal([1, 4, 7, 2, 8, 3, 6, 9], b[boundaryIndices])
 
