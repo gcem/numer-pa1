@@ -1,10 +1,7 @@
 import numpy as np
 import skimage as ski
-import matplotlib.pyplot as plt
 import pa1
-import sys
 import threading
-import show
 
 
 def run(backgroundFilename: np.ndarray, imageToAddFilename: np.ndarray, y: int,
