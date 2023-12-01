@@ -3,8 +3,13 @@ import matplotlib.pyplot as plt
 import pa1
 
 
-def visualizeLaplace():
-    n, m = 5, 7
+def visualizeLaplace(n: int, m: int):
+    """Zeigt die Laplace-Operator-Matrix als ein dreifarbiges Bild an.
+
+    Args:
+        n (int):
+        m (int):
+    """
     laplace = pa1.vectorizedLaplace(n, m).toarray()
 
     # # alternative:
@@ -37,4 +42,4 @@ def visualizeLaplace():
 
 
 if __name__ == "__main__":
-    visualizeLaplace()
+    visualizeLaplace(5, 7)

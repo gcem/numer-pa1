@@ -9,7 +9,7 @@ def showImage(image: np.ndarray,
               location: tuple,
               fig,
               cmap: str | None = None):
-    """Zeit das Bild in der Stelle `location` in einem 6 x 9 Grid an.
+    """Zeigt das Bild in der Stelle `location` in einem 6 x 9 Grid an.
 
     Args:
         image (np.ndarray): Das anzuzeigende Bild

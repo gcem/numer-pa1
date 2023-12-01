@@ -4,8 +4,11 @@ import run
 import sys
 
 
-def runAndSave(filenamePrefix, *runargs, **runkwargs):
+def runAndSave(filenamePrefix: str, *runargs, **runkwargs):
     """Die Argumente sind in `run.run()` dokumentiert.
+
+    Args:
+        filenamePrefix (str): Präfix für die Namen der Ausgabedateien
     """
     (_, result1, result2) = run.run(*runargs, **runkwargs)
 
