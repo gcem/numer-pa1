@@ -52,6 +52,21 @@ def test_getSystem_boundary():
     A = A.todense()
     ident = np.eye(9)
     boundaryIndices = [x for x in range(9) if x != 4]
+    assert np.array_equal(ident[boundaryIndices, :], A[1:, :])
+    assert np.array_equal([1, 4, 7, 2, 8, 3, 6, 9], b[1:])
+
+
+# before using sp.vstack, we replaced the rows of A in-place. this tests that.
+def old_test_getSystem_boundary():
+    target = np.array([
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]]) # yapf:disable
+    source = np.zeros((3, 3))
+    (A, b) = pa1.getSystem(source, target, 0, 0)
+    A = A.todense()
+    ident = np.eye(9)
+    boundaryIndices = [x for x in range(9) if x != 4]
     assert np.array_equal(ident[boundaryIndices, :], A[boundaryIndices, :])
     assert np.array_equal([1, 4, 7, 2, 8, 3, 6, 9], b[boundaryIndices])
 
@@ -75,3 +90,13 @@ def test_clone():
     result = pa1.clone(source, target, 0, 0)
     assert result[1, 1] == round((-4 * 60 + 2 + 4 + 6 + 15) / -4.)
     assert np.count_nonzero(result) == 1
+
+
+def test_gradient():
+    field = np.array([
+        [1, 2, 3],
+        [4, 60, 6],
+        [10, 15, 20]]) # yapf: disable
+    grad = pa1.gradient(field)
+    assert grad[1, 1, 0] == -60 + 15
+    assert grad[1, 1, 1] == -60 + 6

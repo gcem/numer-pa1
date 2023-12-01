@@ -21,13 +21,18 @@ def run():
     result = np.zeros_like(bird)
 
     # for rgb in range(3):
-    #     result[..., rgb] = pa1.clone(plane[..., rgb], bird[..., rgb], y, x)
+    #     result[..., rgb] = pa1.clone(plane[..., rgb],
+    #                                  bird[..., rgb],
+    #                                  y,
+    #                                  x,
+    #                                  method="common")
     def doChannel(rgb: int):
         result[..., rgb] = pa1.clone(plane[..., rgb],
                                      bird[..., rgb],
                                      y,
                                      x,
-                                     method="common")
+                                     method="none")
+        #  method="common")
 
     threads = list()
     for rgb in range(3):
