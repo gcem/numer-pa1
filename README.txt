@@ -39,6 +39,15 @@ Die Dateinamen (oder Präfixe) können in run_save_images.py bearbeitet werden.
 
 -----------------------------------------------------------
 
+Wir laden auch unsere Tests in "test_pa1.py" hoch, sie werden wie folgt
+durchgeführt: 
+
+python -m pytest --verbose
+
+Dazu brauchen sie das pytest-Modul.
+
+-----------------------------------------------------------
+
 Cem Gündoğdu
 Gaeun Kim
 Zhanel Sainova
