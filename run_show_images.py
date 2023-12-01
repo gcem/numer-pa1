@@ -40,8 +40,8 @@ def showColumn(image: np.ndarray, title: str, index: int, fig):
     """
     showImage(image, title, (1 + 3 * index, 21 + 3 * index), fig)
     for rgb in range(3):
-        showImage(image[..., rgb], ['red', 'green', 'blue'][rgb],
-                  29 + rgb * 9 + 3 * index, fig, 'grey')
+        showImage(image[..., rgb], ["red", "green", "blue"][rgb],
+                  29 + rgb * 9 + 3 * index, fig, "grey")
 
 
 def showAll(original: np.ndarray, result1: np.ndarray, result2: np.ndarray):
@@ -55,9 +55,9 @@ def showAll(original: np.ndarray, result1: np.ndarray, result2: np.ndarray):
     # prepare figure
     fig = plt.figure()
 
-    showColumn(original, 'Originalbild', 0, fig)
-    showColumn(result1, '1. Teilaufgabe', 1, fig)
-    showColumn(result2, '2. Teilaufgabe', 2, fig)
+    showColumn(original, "Originalbild", 0, fig)
+    showColumn(result1, "1. Teilaufgabe", 1, fig)
+    showColumn(result2, "2. Teilaufgabe", 2, fig)
 
 
 def runAndShow(*runargs, **runkwargs):

@@ -139,11 +139,11 @@ def setConditionsAtBoundary(originalA: sp.spmatrix,
 
     A = sp.vstack([
         originalA[innerIndices, :],
-        sp.eye(n * m, dtype=float, format='csr')[boundaryIndices, :]
+        sp.eye(n * m, dtype=float, format="csr")[boundaryIndices, :]
     ])
     b = np.hstack([
         originalb[innerIndices],
-        target[y:y + n, x:x + m].flatten('F')[boundaryIndices]
+        target[y:y + n, x:x + m].flatten("F")[boundaryIndices]
     ]) # yapf: disable
     return (A, b)
 
@@ -170,7 +170,7 @@ def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
     laplace = vectorizedLaplace(n, m)
 
     A = laplace
-    b = laplace @ source.flatten('F')
+    b = laplace @ source.flatten("F")
 
     return setConditionsAtBoundary(A, b, target, x, y, source.shape)
 
@@ -200,7 +200,7 @@ def getSystemKeepBoth(source: np.ndarray, target: np.ndarray, y: int, x: int):
     targetGradient = gradient(target[y:y + n, x:x + m])
     maxGradient = vectorWithLargerNorm(sourceGradient, targetGradient)
 
-    b = divergence(maxGradient).flatten('F')
+    b = divergence(maxGradient).flatten("F")
 
     return setConditionsAtBoundary(A, b, target, x, y, source.shape)
 
@@ -240,5 +240,5 @@ def clone(source: np.ndarray,
     result = target.copy()
     result[y:y + n,
            x:x + m] = np.reshape(solution, source.shape,
-                                 'F').round().clip(0, 255).astype('uint8')
+                                 "F").round().clip(0, 255).astype("uint8")
     return result

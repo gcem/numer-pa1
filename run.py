@@ -40,7 +40,7 @@ def run(backgroundFilename: str, imageToAddFilename: str, y: int, x: int,
     semaphore = threading.BoundedSemaphore(maxThreads) if maxThreads else None
     threads = list()
     for rgb in range(3):
-        for result, method in [(result1, None), (result2, 'keepBoth')]:
+        for result, method in [(result1, None), (result2, "keepBoth")]:
             th = threading.Thread(target=doChannel,
                                   args=(rgb, result, method, semaphore))
             threads.append(th)

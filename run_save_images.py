@@ -12,8 +12,8 @@ def runAndSave(filenamePrefix: str, *runargs, **runkwargs):
     """
     (_, result1, result2) = run.run(*runargs, **runkwargs)
 
-    ski.io.imsave(filenamePrefix + '_part1.jpg', result1)
-    ski.io.imsave(filenamePrefix + '_part2.jpg', result2)
+    ski.io.imsave(filenamePrefix + "_part1.jpg", result1)
+    ski.io.imsave(filenamePrefix + "_part2.jpg", result2)
 
 
 if __name__ == "__main__":
