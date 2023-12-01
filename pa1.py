@@ -97,7 +97,7 @@ def clone(source: np.ndarray,
     sourceF = source.astype(float)
     targetF = target.astype(float)
 
-    getSystemFunction = getSystemForCommonFeatures if method == "common" else getSystem
+    getSystemFunction = getSystemForCommonFeatures if method == "keepBoth" else getSystem
     (A, b) = getSystemFunction(sourceF, targetF, y, x)
     solution = sp.linalg.spsolve(A, b)
     result = target.copy()

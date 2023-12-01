@@ -3,6 +3,7 @@ import skimage as ski
 import matplotlib.pyplot as plt
 import pa1
 import threading
+import show
 
 
 def run():
@@ -18,38 +19,43 @@ def run():
     # y = 2
     # x = 20
 
-    result = np.zeros_like(bird)
+    result1 = np.zeros_like(bird)
+    result2 = np.zeros_like(bird)
 
     # for rgb in range(3):
     #     result[..., rgb] = pa1.clone(plane[..., rgb],
     #                                  bird[..., rgb],
     #                                  y,
     #                                  x,
-    #                                  method="common")
-    def doChannel(rgb: int):
+    #                                  method="keepBoth")
+    def doChannel(rgb: int, result: np.ndarray, method: str | None):
         result[..., rgb] = pa1.clone(plane[..., rgb],
                                      bird[..., rgb],
                                      y,
                                      x,
-                                     method="none")
-        #  method="common")
+                                     method=method)
 
     threads = list()
     for rgb in range(3):
-        th = threading.Thread(target=doChannel, args=(rgb, ))
-        threads.append(th)
-        th.start()
+        th1 = threading.Thread(target=doChannel, args=(rgb, result1, None))
+        threads.append(th1)
+        th1.start()
+        th2 = threading.Thread(target=doChannel,
+                               args=(rgb, result2, 'keepBoth'))
+        threads.append(th2)
+        th2.start()
     for th in threads:
         th.join()
 
-    # ski.io.imsave("images/result.jpg", result)
-    ski.io.imsave("images/result_common.jpg", result)
+    # # ski.io.imsave("images/result.jpg", result)
+    # ski.io.imsave("images/result_common.jpg", result)
 
-    ski.io.imsave("images/result_red.jpg", result[..., 0])
-    ski.io.imsave("images/result_green.jpg", result[..., 1])
-    ski.io.imsave("images/result_blue.jpg", result[..., 2])
+    # ski.io.imsave("images/result_red.jpg", result[..., 0])
+    # ski.io.imsave("images/result_green.jpg", result[..., 1])
+    # ski.io.imsave("images/result_blue.jpg", result[..., 2])
 
-    ski.io.imshow(result, plugin="matplotlib")
+    # ski.io.imshow(result, plugin="matplotlib")
+    show.showAll(bird, result1, result2)
     plt.show()
 
 
