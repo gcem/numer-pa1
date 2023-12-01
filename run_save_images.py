@@ -5,6 +5,8 @@ import sys
 
 
 def runAndSave(filenamePrefix, *runargs, **runkwargs):
+    """Die Argumente sind in `run.run()` dokumentiert.
+    """
     (_, result1, result2) = run.run(*runargs, **runkwargs)
 
     ski.io.imsave(filenamePrefix + '_part1.jpg', result1)

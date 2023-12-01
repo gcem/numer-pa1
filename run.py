@@ -4,8 +4,21 @@ import pa1
 import threading
 
 
-def run(backgroundFilename: np.ndarray, imageToAddFilename: np.ndarray, y: int,
-        x: int, maxThreads: int | None):
+def run(backgroundFilename: str, imageToAddFilename: str, y: int, x: int,
+        maxThreads: int | None):
+    """Löst die beiden Aufgaben. Fügt `imageToAdd` ins `background` in der
+    Stelle `y`, `x` ein.
+
+    Args:
+        backgroundFilename (str): Pfad
+        imageToAddFilename (str): Pfad
+        y (int): y-Koordinate
+        x (int): x-Koordinate
+        maxThreads (int | None): None heißt die maximale Anzahl, zurzeit 6.
+
+    Returns:
+        Tuple: (Hintergrund, 1. Aufgabe, 2. Aufgabe)
+    """
     background = ski.io.imread(backgroundFilename)
     imageToAdd = ski.io.imread(imageToAddFilename)
 
@@ -23,6 +36,7 @@ def run(backgroundFilename: np.ndarray, imageToAddFilename: np.ndarray, y: int,
         if semaphore:
             semaphore.release()
 
+    # begrenzt ggf. die Anzahl von threads
     semaphore = threading.BoundedSemaphore(maxThreads) if maxThreads else None
     threads = list()
     for rgb in range(3):
