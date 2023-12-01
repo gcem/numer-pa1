@@ -15,7 +15,7 @@ def backwardDiff(n: int):
 
 
 def vectorizedLaplace(n: int, m: int):
-    return sp.csr_matrix(sp.kron(sp.eye(m), discreteSecondDiff(n)) +
+    return sp.lil_matrix(sp.kron(sp.eye(m), discreteSecondDiff(n)) +
                          sp.kron(discreteSecondDiff(m), sp.eye(n)),
                          dtype=float)
 
@@ -43,19 +43,25 @@ def divergence(field: np.ndarray):
             field[..., 1] @ backwardDiff(m).transpose())
 
 
-def setConditionsAtBoundary(A: sp.spmatrix, b: sp.spmatrix | np.ndarray,
+def setConditionsAtBoundary(originalA: sp.spmatrix,
+                            originalb: sp.spmatrix | np.ndarray,
                             target: np.ndarray, x: int, y: int,
                             sourceShape: tuple):
     (n, m) = sourceShape
-    boundaryIndices = np.zeros(2 * (n + m) - 4, dtype=int)
-    boundaryIndices[:n] = range(n)
-    boundaryIndices[-n:] = range(n * (m - 1), n * m)
-    topIndices = np.arange(n, n * (m - 1), step=n)
-    boundaryIndices[n:-n:2] = topIndices
-    boundaryIndices[n + 1:-n:2] = topIndices + (n - 1)
 
-    A[boundaryIndices, :] = sp.eye(n * m, format='csr')[boundaryIndices, :]
-    b[boundaryIndices] = target[y:y + n, x:x + m].flatten('F')[boundaryIndices]
+    innerIndices = np.hstack(
+        [range(i * n + 1, (i + 1) * n - 1) for i in range(1, m - 1)])
+    boundaryIndices = list(set(range(n * m)) - set(innerIndices))
+
+    A = sp.vstack([
+        originalA[innerIndices, :],
+        sp.eye(n * m, dtype=float, format='lil')[boundaryIndices, :]
+    ])
+    b = np.hstack([
+        originalb[innerIndices],
+        target[y:y + n, x:x + m].flatten('F')[boundaryIndices]
+    ]) # yapf: disable
+    return (sp.csr_matrix(A), b)
 
 
 def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
@@ -65,8 +71,7 @@ def getSystem(source: np.ndarray, target: np.ndarray, y: int, x: int):
     A = laplace
     b = laplace @ source.flatten('F').transpose()
 
-    setConditionsAtBoundary(A, b, target, x, y, source.shape)
-    return (A, b)
+    return setConditionsAtBoundary(A, b, target, x, y, source.shape)
 
 
 def getSystemForCommonFeatures(source: np.ndarray, target: np.ndarray, y: int,
@@ -80,8 +85,7 @@ def getSystemForCommonFeatures(source: np.ndarray, target: np.ndarray, y: int,
 
     b = divergence(maxGradient).flatten('F').transpose()
 
-    setConditionsAtBoundary(A, b, target, x, y, source.shape)
-    return (A, b)
+    return setConditionsAtBoundary(A, b, target, x, y, source.shape)
 
 
 def clone(source: np.ndarray,
