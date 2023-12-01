@@ -1,4 +1,15 @@
 -----------------------------------------------------------
+--------------------   DATEIEN:  --------------------------
+-----------------------------------------------------------
+
+Die Datei "pa1.py" enthält den wichtigsten (mathematischen) Teil von unserer
+Lösung.
+
+Die anderen Dateien nutzen diese Funktionen, um Bilder zu erzeugen.
+
+-----------------------------------------------------------
+--------------------   NUTZUNG:  --------------------------
+-----------------------------------------------------------
 
 Um den Laplace-Operator für n=5, m=7 zu visualisieren, nutzen Sie:
 
@@ -46,6 +57,8 @@ python -m pytest --verbose
 
 Dazu brauchen sie das pytest-Modul.
 
+-----------------------------------------------------------
+--------------------   GRUPPE:   --------------------------
 -----------------------------------------------------------
 
 Cem Gündoğdu
